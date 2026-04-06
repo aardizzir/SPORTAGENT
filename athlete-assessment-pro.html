@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sport Agent - Athlete Assessment</title>
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX'); // REEMPLAZA con tu ID de Google Analytics
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --black: #0a0a0a;
+            --earth: #8B7355;
+            --moss: #4A5D4F;
+            --cream: #F5F1E8;
+            --white: #ffffff;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--black);
+            color: var(--cream);
+            min-height: 100vh;
+            font-weight: 300;
+            letter-spacing: -0.01em;
+        }
+        
+        /* INTRO SCREEN */
+        .intro-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(180deg, var(--black) 0%, #1a1410 100%);
+        }
+        
+        .intro-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><line x1="0" y1="400" x2="1200" y2="400" stroke="%234A5D4F" stroke-width="0.5" opacity="0.3"/><line x1="600" y1="0" x2="600" y2="800" stroke="%234A5D4F" stroke-width="0.5" opacity="0.3"/></svg>');
+            opacity: 0.3;
+            z-index: 0;
+        }
+        
+        .intro-screen > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo {
+            font-size: 1rem;
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            margin-bottom: 3rem;
+            text-transform: uppercase;
+            color: var(--earth);
+        }
+        
+        .intro-title {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            color: var(--cream);
+        }
+        
+        .intro-subtitle {
+            font-size: 1rem;
+            font-weight: 300;
+            opacity: 0.6;
+            margin-bottom: 4rem;
+            max-width: 500px;
+            line-height: 1.6;
+        }
+        
+        .intro-line {
+            width: 80px;
+            height: 1px;
+            background: var(--moss);
+            margin: 3rem auto;
+        }
+        
+        .intro-stats {
+            display: flex;
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+        
+        .intro-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .intro-stat-value {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--moss);
+        }
+        
+        .intro-stat-label {
+            font-size: 0.75rem;
+            opacity: 0.5;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        
+        .btn-start {
+            background: transparent;
+            color: var(--cream);
+            border: 1px solid var(--moss);
+            padding: 1rem 3rem;
+            font-size: 0.875rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-family: inherit;
+        }
+        
+        .btn-start:hover {
+            background: var(--moss);
+            transform: translateY(-2px);
+        }
+        
+        /* QUESTION SCREEN */
+        .question-screen {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 2rem;
+            background: var(--black);
+        }
+        
+        .question-screen.active {
+            display: flex;
+        }
+        
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem;
+            background: var(--black);
+            z-index: 100;
+            border-bottom: 1px solid rgba(75, 93, 79, 0.2);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 1px;
+            background: rgba(245, 241, 232, 0.1);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--moss);
+            transition: width 0.5s ease;
+        }
+        
+        .question-number {
+            font-size: 0.75rem;
+            opacity: 0.4;
+            margin-top: 1rem;
+            text-align: center;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+        
+        .question-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 700px;
+            margin: 0 auto;
+            width: 100%;
+            padding-top: 120px;
+            padding-bottom: 100px;
+        }
+        
+        .question-text {
+            font-size: 1.8rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+            text-align: center;
+            color: var(--cream);
+        }
+        
+        .question-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.5;
+            margin-bottom: 3rem;
+            text-align: center;
+            font-weight: 300;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .option {
+            background: transparent;
+            border: 1px solid rgba(245, 241, 232, 0.15);
+            padding: 1.2rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            text-align: left;
+            position: relative;
+            font-weight: 300;
+            color: var(--cream);
+        }
+        
+        .option:hover {
+            background: rgba(75, 93, 79, 0.1);
+            border-color: var(--moss);
+            transform: translateX(3px);
+        }
+        
+        .option.selected {
+            background: rgba(75, 93, 79, 0.15);
+            border-color: var(--moss);
+        }
+        
+        .option.checkbox {
+            padding-left: 3rem;
+        }
+        
+        .option.checkbox::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 1px solid rgba(245, 241, 232, 0.3);
+        }
+        
+        .option.checkbox.selected::before {
+            background: var(--moss);
+            border-color: var(--moss);
+        }
+        
+        .option.checkbox.selected::after {
+            content: '✓';
+            position: absolute;
+            left: 1.15rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--cream);
+            font-weight: 400;
+            font-size: 0.75rem;
+        }
+        
+        /* SLIDER */
+        .slider-container {
+            margin: 2rem 0;
+        }
+        
+        .slider-value {
+            font-size: 4rem;
+            font-weight: 300;
+            text-align: center;
+            color: var(--moss);
+            margin-bottom: 2rem;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 1px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(245, 241, 232, 0.2);
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--moss);
+            cursor: pointer;
+            border-radius: 0;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--moss);
+            cursor: pointer;
+            border: none;
+            border-radius: 0;
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            opacity: 0.4;
+            font-weight: 300;
+        }
+        
+        /* TEXT INPUT */
+        .text-input {
+            background: transparent;
+            border: 1px solid rgba(245, 241, 232, 0.15);
+            color: var(--cream);
+            padding: 1rem;
+            font-size: 0.95rem;
+            font-family: inherit;
+            font-weight: 300;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .text-input:focus {
+            outline: none;
+            border-color: var(--moss);
+            background: rgba(75, 93, 79, 0.05);
+        }
+        
+        .text-input::placeholder {
+            color: rgba(245, 241, 232, 0.3);
+        }
+        
+        /* NAVIGATION */
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 3rem;
+            justify-content: center;
+        }
+        
+        .btn {
+            background: transparent;
+            color: var(--cream);
+            border: 1px solid rgba(245, 241, 232, 0.2);
+            padding: 0.9rem 2rem;
+            font-size: 0.8rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        
+        .btn:hover {
+            background: rgba(245, 241, 232, 0.05);
+            border-color: var(--moss);
+        }
+        
+        .btn-next {
+            background: var(--moss);
+            border-color: var(--moss);
+        }
+        
+        .btn-next:hover {
+            background: #5a6d5f;
+        }
+        
+        .btn-next:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        /* RESULTS SCREEN */
+        .results-screen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 3rem 2rem;
+            text-align: center;
+            background: linear-gradient(180deg, var(--black) 0%, #1a1410 100%);
+        }
+        
+        .results-screen.active {
+            display: flex;
+        }
+        
+        .results-line {
+            width: 100px;
+            height: 1px;
+            background: var(--moss);
+            margin-bottom: 3rem;
+        }
+        
+        .results-title {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+            color: var(--moss);
+            letter-spacing: -0.02em;
+        }
+        
+        .results-description {
+            font-size: 1.1rem;
+            font-weight: 300;
+            opacity: 0.7;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            line-height: 1.7;
+        }
+        
+        .results-insights {
+            background: rgba(75, 93, 79, 0.1);
+            border: 1px solid rgba(75, 93, 79, 0.3);
+            padding: 2rem;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .results-insights h3 {
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+            color: var(--moss);
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        
+        .insight-item {
+            text-align: left;
+            padding: 0.9rem 0;
+            border-bottom: 1px solid rgba(245, 241, 232, 0.1);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+        
+        .insight-item:last-child {
+            border-bottom: none;
+        }
+        
+        .qualification-box {
+            background: rgba(75, 93, 79, 0.15);
+            border: 1px solid var(--moss);
+            padding: 2.5rem 2rem;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .qualification-box h3 {
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            color: var(--moss);
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        
+        .qualification-box p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+        
+        .email-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .email-input {
+            background: transparent;
+            border: 1px solid rgba(245, 241, 232, 0.2);
+            color: var(--cream);
+            padding: 1rem;
+            font-size: 0.95rem;
+            font-family: inherit;
+            font-weight: 300;
+        }
+        
+        .email-input:focus {
+            outline: none;
+            border-color: var(--moss);
+        }
+        
+        .email-input::placeholder {
+            color: rgba(245, 241, 232, 0.3);
+        }
+        
+        .btn-submit {
+            background: var(--moss);
+            color: var(--cream);
+            border: 1px solid var(--moss);
+            padding: 1.1rem;
+            font-size: 0.85rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        
+        .btn-submit:hover {
+            background: #5a6d5f;
+        }
+        
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 768px) {
+            .intro-title {
+                font-size: 1.8rem;
+            }
+            
+            .intro-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .question-text {
+                font-size: 1.4rem;
+            }
+            
+            .results-title {
+                font-size: 1.8rem;
+            }
+        }
+        
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .question-container {
+            animation: fadeIn 0.6s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SCREEN -->
+    <div class="intro-screen" id="introScreen">
+        <div class="logo">SPORT AGENT</div>
+        <h1 class="intro-title">Athlete Profile<br>Assessment</h1>
+        <p class="intro-subtitle">
+            Descubre tu perfil de atleta y si calificas para Sport Agent
+        </p>
+        
+        <div class="intro-line"></div>
+        
+        <div class="intro-stats">
+            <div class="intro-stat">
+                <div class="intro-stat-value">2 min</div>
+                <div class="intro-stat-label">Duración</div>
+            </div>
+            <div class="intro-stat">
+                <div class="intro-stat-value">12</div>
+                <div class="intro-stat-label">Preguntas</div>
+            </div>
+            <div class="intro-stat">
+                <div class="intro-stat-value">100%</div>
+                <div class="intro-stat-label">Anónimo</div>
+            </div>
+        </div>
+        
+        <button class="btn-start" onclick="startAssessment()">
+            Empezar →
+        </button>
+    </div>
+
+    <!-- QUESTION SCREENS -->
+    <div class="question-screen" id="questionScreen">
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-number" id="questionNumber">Pregunta 1 de 12</div>
+        </div>
+        
+        <div class="question-container" id="questionContainer">
+            <!-- Questions will be injected here -->
+        </div>
+        
+        <div class="nav-buttons">
+            <button class="btn" id="btnBack" onclick="prevQuestion()" style="display: none;">
+                ← Anterior
+            </button>
+            <button class="btn btn-next" id="btnNext" onclick="nextQuestion()" disabled>
+                Siguiente →
+            </button>
+        </div>
+    </div>
+
+    <!-- RESULTS SCREEN -->
+    <div class="results-screen" id="resultsScreen">
+        <div class="results-line"></div>
+        <h1 class="results-title" id="resultsTitle">Tu Perfil de Atleta</h1>
+        <p class="results-description" id="resultsDescription"></p>
+        
+        <div class="results-insights" id="resultsInsights">
+            <h3>Tus Pain Points Principales:</h3>
+            <div id="insightsList"></div>
+        </div>
+        
+        <div class="qualification-box" id="qualificationBox">
+            <h3>CALIFICAS PARA SPORT AGENT</h3>
+            <p id="qualificationText"></p>
+            
+            <div class="email-form">
+                <input 
+                    type="email" 
+                    class="email-input" 
+                    id="emailInput" 
+                    placeholder="tu@email.com"
+                    required
+                >
+                <input 
+                    type="text" 
+                    class="email-input" 
+                    id="nameInput" 
+                    placeholder="Tu nombre"
+                    required
+                >
+                <input 
+                    type="text" 
+                    class="email-input" 
+                    id="cityInput" 
+                    placeholder="Ciudad"
+                >
+                <button class="btn-submit" onclick="submitContact()">
+                    Quiero participar →
+                </button>
+            </div>
+        </div>
+        
+        <p style="opacity: 0.4; font-size: 0.8rem; max-width: 500px; font-weight: 300;">
+            (buscando naming)<br>
+            Te contactaremos en 1-2 semanas cuando el MVP esté listo.
+        </p>
+    </div>
+
+    <script>
+        // QUESTIONS DATA - VERSIÓN ACTUALIZADA
+        const questions = [
+            {
+                id: 1,
+                text: "¿Qué describe mejor tu situación?",
+                type: "single",
+                options: [
+                    { text: "Entreno 5-7x/semana con programa estructurado", value: "high_freq", score: 10 },
+                    { text: "Entreno 3-4x/semana, sigo plan general", value: "med_freq", score: 7 },
+                    { text: "Entreno cuando puedo, sin plan fijo", value: "low_freq", score: 3 },
+                    { text: "Recién empezando (menos de 6 meses)", value: "beginner", score: 1 }
+                ]
+            },
+            {
+                id: 2,
+                text: "¿Cuál es tu foco principal?",
+                subtitle: "(Puedes seleccionar varios)",
+                type: "multiple",
+                options: [
+                    { text: "Gym / Fuerza", value: "gym" },
+                    { text: "Running / Cardio", value: "running" },
+                    { text: "Deportes de contacto (rugby, MMA, box)", value: "contact" },
+                    { text: "CrossFit / Functional", value: "crossfit" },
+                    { text: "Deportes de equipo (fútbol, basketball)", value: "team_sports" },
+                    { text: "Deportes individuales (bicicleta, tenis, surf, etc)", value: "individual" },
+                    { text: "Otros", value: "other" }
+                ]
+            },
+            {
+                id: 3,
+                text: "¿Cuál describe mejor tu objetivo?",
+                type: "single",
+                options: [
+                    { text: "Rendimiento competitivo (mejorar tiempos/pesos/ranking)", value: "performance", score: 10 },
+                    { text: "Salud y longevidad (entrenar toda la vida sin lesionarme)", value: "longevity", score: 9 },
+                    { text: "Estética / composición corporal", value: "aesthetic", score: 5 },
+                    { text: "Social / comunidad", value: "social", score: 3 },
+                    { text: "Entretenimiento", value: "entertainment", score: 2 }
+                ]
+            },
+            {
+                id: 4,
+                text: "¿Usas reloj inteligente / wearable?",
+                type: "single",
+                options: [
+                    { text: "Sí, Apple Watch", value: "apple", score: 10 },
+                    { text: "Sí, Garmin", value: "garmin", score: 10 },
+                    { text: "Sí, Whoop / Oura / Polar Band", value: "whoop", score: 10 },
+                    { text: "Sí, otro", value: "other_wearable", score: 8 },
+                    { text: "No, pero me interesa", value: "interested", score: 5 },
+                    { text: "No, no me interesa", value: "not_interested", score: 0 }
+                ]
+            },
+            {
+                id: 5,
+                text: "¿Qué métricas revisas regularmente?",
+                subtitle: "(Puedes seleccionar varias)",
+                type: "multiple",
+                condition: (answers) => {
+                    const q4 = answers.find(a => a.questionId === 4);
+                    return q4 && ['apple', 'garmin', 'whoop', 'other_wearable'].includes(q4.value);
+                },
+                options: [
+                    { text: "HRV (variabilidad ritmo cardíaco)", value: "hrv" },
+                    { text: "Sueño (duración/calidad)", value: "sleep" },
+                    { text: "Frecuencia cardíaca", value: "hr" },
+                    { text: "Pasos / calorías", value: "steps" },
+                    { text: "VO2 Max / fitness level", value: "vo2" },
+                    { text: "Zonas de entrenamiento", value: "zones" },
+                    { text: "Recovery / Readiness scores", value: "recovery" },
+                    { text: "No sé qué significan, solo las veo", value: "dont_understand" }
+                ]
+            },
+            {
+                id: 6,
+                text: "Cuando ves tus métricas (HRV, sueño, recovery)...",
+                type: "single",
+                options: [
+                    { text: "Sé exactamente qué significan y cómo usarlas", value: "expert", score: 3 },
+                    { text: "Entiendo lo básico, pero no estoy seguro qué hacer con ellas", value: "intermediate", score: 10 },
+                    { text: "No entiendo qué significan, solo veo los números", value: "confused", score: 9 },
+                    { text: "Las veo pero no las uso para tomar decisiones", value: "ignore", score: 7 }
+                ]
+            },
+            {
+                id: 7,
+                text: "Imagina: Es miércoles 6am. Dormiste mal, te sientes cansado, y hoy toca entrenar fuerte (piernas/pecho).",
+                subtitle: "¿Qué haces normalmente?",
+                type: "single",
+                options: [
+                    { text: "Voy igual como planeado (total 'ya estoy ahí')", value: "go_anyway", score: 8 },
+                    { text: "Voy pero bajo peso/intensidad (no sé cuánto exactamente)", value: "modify_uncertain", score: 10 },
+                    { text: "Cancelo por miedo a lesionarme", value: "cancel_fear", score: 7 },
+                    { text: "Busco en Google 'debería entrenar cuando estoy cansado' y decido según", value: "google", score: 9 },
+                    { text: "Le pregunto a ChatGPT / IA", value: "ask_ai", score: 8 },
+                    { text: "Le pregunto a alguien (coach, grupo WhatsApp)", value: "ask_others", score: 6 }
+                ]
+            },
+            {
+                id: 8,
+                text: "Imagina: Tus tobillos/rodillas/hombros te duelen 5/10. Y tengo Partido/Entrenamiento mañana.",
+                subtitle: "¿Qué haces?",
+                type: "single",
+                options: [
+                    { text: "Busco en Google qué hacer ('hielo o calor', 'debería descansar', etc)", value: "google_pain", score: 10 },
+                    { text: "Le pregunto a alguien (fisio, coach, grupo)", value: "ask_pain", score: 7 },
+                    { text: "'Pruebo' y si duele mucho paro", value: "trial_error", score: 8 },
+                    { text: "Tomo algo (antiinflamatorio) y entreno igual", value: "medicate", score: 5 },
+                    { text: "Sigo mi protocolo personal (tengo uno claro)", value: "have_protocol", score: 2 },
+                    { text: "Cancelo automáticamente por miedo", value: "cancel_auto", score: 6 }
+                ]
+            },
+            {
+                id: 9,
+                text: "¿Cuál es tu mayor frustración con molestias/dolores?",
+                type: "single",
+                options: [
+                    { text: "No sé si es 'dolor normal' o inicio de lesión", value: "cant_identify", score: 10 },
+                    { text: "No sé qué hacer (¿hielo? ¿calor? ¿estiramiento?)", value: "what_to_do", score: 10 },
+                    { text: "No sé si entrenar o descansar", value: "train_or_rest", score: 9 },
+                    { text: "Google me da 50 respuestas diferentes", value: "google_confusion", score: 10 },
+                    { text: "Pierdo días de entreno por miedo innecesario", value: "fear_loss", score: 8 },
+                    { text: "Me lesiono por entrenar cuando no debía", value: "injury_history", score: 9 }
+                ]
+            },
+            {
+                id: 10,
+                text: "Si existiera una app que analiza tus datos + molestias, y te dice EXACTAMENTE qué hacer cada día...",
+                subtitle: "(¿hielo?, ¿qué ejercicios?, ¿cuánto bajar peso?)",
+                type: "single",
+                options: [
+                    { text: "Sí, definitivamente (esto es lo que necesito)", value: "definitely", score: 10 },
+                    { text: "Probablemente sí, si funciona bien", value: "probably", score: 7 },
+                    { text: "Tal vez, depende de qué tan fácil sea", value: "maybe", score: 4 },
+                    { text: "Probablemente no", value: "probably_not", score: 1 },
+                    { text: "No, prefiero decidir yo", value: "no", score: 0 }
+                ]
+            },
+            {
+                id: 11,
+                text: "¿Pagarías por algo así?",
+                type: "single",
+                options: [
+                    { text: "Sí, $15-20 USD/mes", value: "high", score: 10 },
+                    { text: "Sí, $10-15 USD/mes", value: "medium", score: 8 },
+                    { text: "Sí, $5-10 USD/mes", value: "low", score: 6 },
+                    { text: "Solo si es gratis/freemium", value: "free", score: 3 },
+                    { text: "No pagaría (pero tendría acceso limitado a todas las funcionalidades)", value: "never", score: 0 }
+                ]
+            },
+            {
+                id: 12,
+                text: "En una escala de 1-10, ¿qué tan confiado te sientes tomando decisiones diarias sobre tu entrenamiento?",
+                subtitle: "(Por ejemplo: decidir si entrenar fuerte, bajar intensidad, descansar, qué hacer con una molestia, etc.)",
+                type: "slider",
+                min: 1,
+                max: 10,
+                labels: {
+                    min: "Siempre dudo, busco en Google, pregunto",
+                    max: "Totalmente confiado, sé exactamente qué hacer"
+                }
+            }
+        ];
+
+        // STATE
+        let currentQuestionIndex = 0;
+        let answers = [];
+        let displayedQuestionIndices = [];
+
+        // START ASSESSMENT
+        function startAssessment() {
+            // Google Analytics Event
+            gtag('event', 'assessment_started', {
+                'event_category': 'engagement',
+                'event_label': 'athlete_assessment'
+            });
+            
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('questionScreen').style.display = 'flex';
+            buildQuestionFlow();
+            renderQuestion();
+        }
+
+        function buildQuestionFlow() {
+            displayedQuestionIndices = [];
+            for (let i = 0; i < questions.length; i++) {
+                const q = questions[i];
+                if (!q.condition || q.condition(answers)) {
+                    displayedQuestionIndices.push(i);
+                }
+            }
+        }
+
+        function renderQuestion() {
+            const questionIndex = displayedQuestionIndices[currentQuestionIndex];
+            const question = questions[questionIndex];
+            
+            const progress = ((currentQuestionIndex + 1) / displayedQuestionIndices.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('questionNumber').textContent = 
+                `Pregunta ${currentQuestionIndex + 1} de ${displayedQuestionIndices.length}`;
+            
+            let html = `
+                <h2 class="question-text">${question.text}</h2>
+                ${question.subtitle ? `<p class="question-subtitle">${question.subtitle}</p>` : ''}
+            `;
+            
+            if (question.type === 'single' || question.type === 'multiple') {
+                html += '<div class="options">';
+                question.options.forEach((option, index) => {
+                    const isSelected = isOptionSelected(question.id, option.value);
+                    const checkboxClass = question.type === 'multiple' ? 'checkbox' : '';
+                    html += `
+                        <div class="option ${checkboxClass} ${isSelected ? 'selected' : ''}" 
+                             onclick="selectOption(${question.id}, '${option.value}', '${question.type}', ${index})">
+                            ${option.text}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            } else if (question.type === 'slider') {
+                const currentValue = getSliderValue(question.id) || 5;
+                html += `
+                    <div class="slider-container">
+                        <div class="slider-value" id="sliderValue">${currentValue}</div>
+                        <input type="range" 
+                               class="slider" 
+                               min="${question.min}" 
+                               max="${question.max}" 
+                               value="${currentValue}"
+                               oninput="updateSlider(${question.id}, this.value)">
+                        <div class="slider-labels">
+                            <span>${question.labels.min}</span>
+                            <span>${question.labels.max}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('questionContainer').innerHTML = html;
+            document.getElementById('btnBack').style.display = currentQuestionIndex > 0 ? 'block' : 'none';
+            updateNextButton();
+        }
+
+        function selectOption(questionId, value, type, index) {
+            if (type === 'single') {
+                answers = answers.filter(a => a.questionId !== questionId);
+                answers.push({ questionId, value, type });
+            } else if (type === 'multiple') {
+                const existingIndex = answers.findIndex(a => a.questionId === questionId && a.value === value);
+                if (existingIndex >= 0) {
+                    answers.splice(existingIndex, 1);
+                } else {
+                    answers.push({ questionId, value, type });
+                }
+            }
+            
+            renderQuestion();
+        }
+
+        function updateSlider(questionId, value) {
+            document.getElementById('sliderValue').textContent = value;
+            answers = answers.filter(a => a.questionId !== questionId);
+            answers.push({ questionId, value: parseInt(value), type: 'slider' });
+            updateNextButton();
+        }
+
+        function isOptionSelected(questionId, value) {
+            return answers.some(a => a.questionId === questionId && a.value === value);
+        }
+
+        function getSliderValue(questionId) {
+            const answer = answers.find(a => a.questionId === questionId);
+            return answer ? answer.value : null;
+        }
+
+        function updateNextButton() {
+            const questionIndex = displayedQuestionIndices[currentQuestionIndex];
+            const question = questions[questionIndex];
+            const hasAnswer = answers.some(a => a.questionId === question.id);
+            document.getElementById('btnNext').disabled = !hasAnswer;
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < displayedQuestionIndices.length - 1) {
+                currentQuestionIndex++;
+                buildQuestionFlow();
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        function calculateProfile() {
+            let totalScore = 0;
+            let maxScore = 0;
+            
+            answers.forEach(answer => {
+                const questionIndex = questions.findIndex(q => q.id === answer.questionId);
+                if (questionIndex >= 0) {
+                    const question = questions[questionIndex];
+                    if (question.type === 'single') {
+                        const option = question.options.find(o => o.value === answer.value);
+                        if (option && option.score !== undefined) {
+                            totalScore += option.score;
+                            maxScore += 10;
+                        }
+                    }
+                }
+            });
+            
+            const percentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
+            
+            let profile = {};
+            
+            if (percentage >= 70) {
+                profile = {
+                    title: "El Guerrero Inteligente",
+                    description: "Entrenas consistentemente y te importan los datos, pero te frustras al interpretarlos. Googleas constantemente sobre molestias y decisiones. Eres el perfil ideal para Sport Agent.",
+                    insights: [
+                        "Entrenas 5+ veces/semana con programa estructurado",
+                        "Usas wearable pero no sabes qué hacer con los datos",
+                        "Tu mayor frustración: no saber qué hacer cuando algo duele",
+                        "Googleas regularmente sobre dolores y decisiones"
+                    ],
+                    qualifies: true,
+                    qualificationText: "Eres exactamente el perfil que estamos buscando. Tu feedback será invaluable."
+                };
+            } else if (percentage >= 50) {
+                profile = {
+                    title: "El Metricólogo Curioso",
+                    description: "Te interesan los datos y la optimización, pero todavía estás aprendiendo cómo usarlos efectivamente.",
+                    insights: [
+                        "Entrenas regularmente con cierta estructura",
+                        "Interesado en wearables y datos",
+                        "Todavía aprendiendo a interpretar métricas",
+                        "Buscas mejorar tu toma de decisiones"
+                    ],
+                    qualifies: true,
+                    qualificationText: "Tu perfil es muy interesante. Queremos ayudarte a dominar la interpretación de datos."
+                };
+            } else {
+                profile = {
+                    title: "El Atleta Intuitivo",
+                    description: "Entrenas por feeling más que por datos.",
+                    insights: [
+                        "Enfoque más intuitivo al entrenamiento",
+                        "Menos dependencia de métricas",
+                        "Prefieres decidir por ti mismo"
+                    ],
+                    qualifies: false,
+                    qualificationText: "Gracias por completar el assessment. Sport Agent está enfocado en atletas que ya usan datos activamente. Te mantendremos informado."
+                };
+            }
+            
+            return profile;
+        }
+
+        function showResults() {
+            const profile = calculateProfile();
+            
+            // Google Analytics Event
+            gtag('event', 'assessment_completed', {
+                'event_category': 'conversion',
+                'event_label': profile.title,
+                'value': profile.qualifies ? 1 : 0
+            });
+            
+            document.getElementById('questionScreen').style.display = 'none';
+            document.getElementById('resultsScreen').style.display = 'flex';
+            
+            document.getElementById('resultsTitle').textContent = profile.title;
+            document.getElementById('resultsDescription').textContent = profile.description;
+            
+            let insightsHtml = '';
+            profile.insights.forEach(insight => {
+                insightsHtml += `<div class="insight-item">✓ ${insight}</div>`;
+            });
+            document.getElementById('insightsList').innerHTML = insightsHtml;
+            
+            const qualBox = document.getElementById('qualificationBox');
+            if (profile.qualifies) {
+                qualBox.querySelector('h3').textContent = 'Calificas para Sport Agent';
+                qualBox.querySelector('p').textContent = profile.qualificationText;
+                qualBox.style.display = 'block';
+            } else {
+                qualBox.querySelector('h3').textContent = 'Gracias por participar';
+                qualBox.querySelector('p').textContent = profile.qualificationText;
+                qualBox.querySelector('.email-form').style.display = 'none';
+            }
+        }
+
+        function submitContact() {
+            const email = document.getElementById('emailInput').value;
+            const name = document.getElementById('nameInput').value;
+            const city = document.getElementById('cityInput').value;
+            
+            if (!email || !name) {
+                alert('Por favor completa email y nombre');
+                return;
+            }
+            
+            const data = {
+                email,
+                name,
+                city,
+                answers: answers,
+                profile: calculateProfile(),
+                timestamp: new Date().toISOString()
+            };
+            
+            // ENVIAR A GOOGLE SHEETS
+            sendToGoogleSheets(data);
+            
+            // Google Analytics Event
+            gtag('event', 'contact_submitted', {
+                'event_category': 'conversion',
+                'event_label': 'beta_signup'
+            });
+        }
+
+        // FUNCIÓN PARA ENVIAR A GOOGLE SHEETS
+        function sendToGoogleSheets(data) {
+            const SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+            
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(() => {
+                alert('¡Perfecto! Te contactaremos pronto. Revisa tu email en 1-2 semanas.');
+                console.log('Data enviada a Google Sheets:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Hubo un error. Por favor intenta de nuevo o contáctanos directamente.');
+            });
+        }
+    </script>
+</body>
+</html>
