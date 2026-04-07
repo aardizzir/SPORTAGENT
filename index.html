@@ -25,9 +25,9 @@
         
         :root {
             --black: #0a0a0a;
-            --earth: #8B7355;
-            --moss: #4A5D4F;
-            --cream: #F5F1E8;
+            --earth: #9d8164;
+            --moss: #5a7a65;
+            --cream: #FAF6F0;
             --white: #ffffff;
         }
         
@@ -51,18 +51,12 @@
             text-align: center;
             position: relative;
             background: linear-gradient(180deg, var(--black) 0%, #1a1410 100%);
-        }
-        
-        .intro-screen::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><line x1="0" y1="400" x2="1200" y2="400" stroke="%234A5D4F" stroke-width="0.5" opacity="0.3"/><line x1="600" y1="0" x2="600" y2="800" stroke="%234A5D4F" stroke-width="0.5" opacity="0.3"/></svg>');
-            opacity: 0.3;
-            z-index: 0;
+            background-image: 
+                linear-gradient(180deg, rgba(10, 10, 10, 0.85) 0%, rgba(26, 20, 16, 0.9) 100%),
+                url('https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=1600&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
         
         .intro-screen > * {
@@ -232,7 +226,7 @@
         
         .option {
             background: transparent;
-            border: 1px solid rgba(245, 241, 232, 0.15);
+            border: 1px solid rgba(245, 241, 232, 0.2);
             padding: 1.2rem 1.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -338,7 +332,7 @@
         /* TEXT INPUT */
         .text-input {
             background: transparent;
-            border: 1px solid rgba(245, 241, 232, 0.15);
+            border: 1px solid rgba(245, 241, 232, 0.25);
             color: var(--cream);
             padding: 1rem;
             font-size: 0.95rem;
@@ -409,6 +403,12 @@
             padding: 3rem 2rem;
             text-align: center;
             background: linear-gradient(180deg, var(--black) 0%, #1a1410 100%);
+            background-image: 
+                linear-gradient(180deg, rgba(10, 10, 10, 0.88) 0%, rgba(26, 20, 16, 0.92) 100%),
+                url('https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=1600&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
         
         .results-screen.active {
@@ -505,7 +505,7 @@
         
         .email-input {
             background: transparent;
-            border: 1px solid rgba(245, 241, 232, 0.2);
+            border: 1px solid rgba(245, 241, 232, 0.3);
             color: var(--cream);
             padding: 1rem;
             font-size: 0.95rem;
@@ -583,7 +583,7 @@
         <div class="logo">SPORT AGENT</div>
         <h1 class="intro-title">Athlete Profile<br>Assessment</h1>
         <p class="intro-subtitle">
-            Descubre tu perfil de atleta y si calificas para Sport Agent
+            Descubre tu perfil de Atleta
         </p>
         
         <div class="intro-line"></div>
@@ -766,16 +766,16 @@
             },
             {
                 id: 7,
-                text: "Imagina: Es miércoles 6am. Dormiste mal, te sientes cansado, y hoy toca entrenar fuerte (piernas/pecho).",
+                text: "Escenario: Miércoles 6am. Descansaste poco, te sientes fatigado, y hoy tienes programada una sesión de entrenamiento intenso.",
                 subtitle: "¿Qué haces normalmente?",
                 type: "single",
                 options: [
-                    { text: "Voy igual como planeado (total 'ya estoy ahí')", value: "go_anyway", score: 8 },
-                    { text: "Voy pero bajo peso/intensidad (no sé cuánto exactamente)", value: "modify_uncertain", score: 10 },
-                    { text: "Cancelo por miedo a lesionarme", value: "cancel_fear", score: 7 },
-                    { text: "Busco en Google 'debería entrenar cuando estoy cansado' y decido según", value: "google", score: 9 },
-                    { text: "Le pregunto a ChatGPT / IA", value: "ask_ai", score: 8 },
-                    { text: "Le pregunto a alguien (coach, grupo WhatsApp)", value: "ask_others", score: 6 }
+                    { text: "Ejecuto la sesión como estaba programada", value: "go_anyway", score: 8 },
+                    { text: "Modifico la intensidad intuitivamente, sin criterio específico", value: "modify_uncertain", score: 10 },
+                    { text: "Cancelo la sesión por precaución", value: "cancel_fear", score: 7 },
+                    { text: "Busco información online antes de decidir", value: "google", score: 9 },
+                    { text: "Consulto con herramientas de IA", value: "ask_ai", score: 8 },
+                    { text: "Consulto con mi coach o comunidad deportiva", value: "ask_others", score: 6 }
                 ]
             },
             {
@@ -823,11 +823,12 @@
                 text: "¿Pagarías por algo así?",
                 type: "single",
                 options: [
-                    { text: "Sí, $15-20 USD/mes", value: "high", score: 10 },
-                    { text: "Sí, $10-15 USD/mes", value: "medium", score: 8 },
-                    { text: "Sí, $5-10 USD/mes", value: "low", score: 6 },
+                    { text: "Sí, $10 USD/mes (o $100 USD/año)", value: "high", score: 10 },
+                    { text: "Sí, $8 USD/mes (o $80 USD/año)", value: "medium", score: 9 },
+                    { text: "Sí, $5 USD/mes (o $50 USD/año)", value: "low", score: 7 },
+                    { text: "Sí, $40 USD/año (solo anual)", value: "annual_only", score: 6 },
                     { text: "Solo si es gratis/freemium", value: "free", score: 3 },
-                    { text: "No pagaría (pero tendría acceso limitado a todas las funcionalidades)", value: "never", score: 0 }
+                    { text: "No pagaría (pero tendría acceso limitado)", value: "never", score: 0 }
                 ]
             },
             {
