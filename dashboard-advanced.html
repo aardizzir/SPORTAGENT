@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sport Agent - Dashboard Avanzado</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --black: #0a0a0a;
+            --earth: #9d8164;
+            --moss: #5a7a65;
+            --cream: #FAF6F0;
+            --red: #cc6666;
+            --green: #2d5016;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--black);
+            color: var(--cream);
+            font-weight: 300;
+        }
+        
+        .top-bar {
+            background: rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid rgba(250, 246, 240, 0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .tab {
+            background: transparent;
+            border: 1px solid rgba(250, 246, 240, 0.2);
+            color: var(--cream);
+            padding: 0.8rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .tab:hover {
+            border-color: var(--moss);
+            background: rgba(90, 122, 101, 0.1);
+        }
+        
+        .tab.active {
+            background: var(--moss);
+            border-color: var(--moss);
+        }
+        
+        .view {
+            display: none;
+            padding: 2rem;
+            animation: fadeIn 0.3s;
+        }
+        
+        .view.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: var(--moss);
+        }
+        
+        .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.6;
+        }
+        
+        .load-section {
+            background: rgba(90, 122, 101, 0.1);
+            border: 1px solid var(--moss);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            background: var(--moss);
+            color: var(--cream);
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            border-radius: 4px;
+            margin-right: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .btn:hover {
+            background: #6a8a75;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--moss);
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .kpi-card {
+            background: rgba(250, 246, 240, 0.03);
+            border: 1px solid rgba(250, 246, 240, 0.1);
+            padding: 1.2rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .kpi-card:hover {
+            border-color: var(--moss);
+            transform: translateY(-2px);
+        }
+        
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--moss);
+            margin-bottom: 0.3rem;
+        }
+        
+        .kpi-label {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .kpi-change {
+            font-size: 0.7rem;
+            margin-top: 0.3rem;
+            opacity: 0.5;
+        }
+        
+        .search-bar {
+            background: rgba(250, 246, 240, 0.05);
+            border: 1px solid rgba(250, 246, 240, 0.2);
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+            color: var(--cream);
+            font-family: inherit;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        
+        .search-bar::placeholder {
+            color: rgba(250, 246, 240, 0.3);
+        }
+        
+        .table-container {
+            background: rgba(250, 246, 240, 0.03);
+            border: 1px solid rgba(250, 246, 240, 0.1);
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: rgba(90, 122, 101, 0.2);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid rgba(250, 246, 240, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(250, 246, 240, 0.05);
+        }
+        
+        tr {
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        tr:hover {
+            background: rgba(90, 122, 101, 0.1);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .badge-kako { background: rgba(90, 122, 101, 0.3); color: #5a7a65; }
+        .badge-agus { background: rgba(157, 129, 100, 0.3); color: #9d8164; }
+        .badge-pro { background: rgba(45, 80, 22, 0.3); color: #2d5016; }
+        .badge-maggie { background: rgba(204, 102, 102, 0.3); color: #cc6666; }
+        .badge-anti { background: rgba(102, 102, 102, 0.3); color: #666; }
+        
+        .badge-yes { background: rgba(90, 122, 101, 0.3); color: #5a7a65; }
+        .badge-no { background: rgba(204, 102, 102, 0.3); color: #cc6666; }
+        
+        .user-detail {
+            background: rgba(250, 246, 240, 0.03);
+            border: 1px solid rgba(250, 246, 240, 0.1);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(250, 246, 240, 0.1);
+        }
+        
+        .detail-name {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .detail-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 4px;
+        }
+        
+        .detail-label {
+            font-size: 0.7rem;
+            opacity: 0.6;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        
+        .detail-value {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .chart-container {
+            background: rgba(250, 246, 240, 0.03);
+            border: 1px solid rgba(250, 246, 240, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: var(--moss);
+        }
+        
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .bar-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .bar-label {
+            min-width: 200px;
+            font-size: 0.85rem;
+        }
+        
+        .bar-track {
+            flex: 1;
+            height: 30px;
+            background: rgba(250, 246, 240, 0.05);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            background: var(--moss);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 0.5rem;
+        }
+        
+        .bar-value {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--cream);
+        }
+        
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+        }
+        
+        .heatmap-cell {
+            background: rgba(250, 246, 240, 0.05);
+            padding: 1rem;
+            border-radius: 4px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .heatmap-cell:hover {
+            transform: scale(1.05);
+        }
+        
+        .heatmap-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .heatmap-label {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            opacity: 0.6;
+        }
+        
+        .error {
+            background: rgba(204, 102, 102, 0.1);
+            border: 1px solid var(--red);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .filter-pills {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .pill {
+            background: transparent;
+            border: 1px solid rgba(250, 246, 240, 0.2);
+            color: var(--cream);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pill:hover {
+            border-color: var(--moss);
+            background: rgba(90, 122, 101, 0.1);
+        }
+        
+        .pill.active {
+            background: var(--moss);
+            border-color: var(--moss);
+        }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .insight-card {
+            background: rgba(90, 122, 101, 0.1);
+            border: 1px solid var(--moss);
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+        
+        .insight-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--moss);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .insight-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="container">
+            <div class="tabs">
+                <button class="tab active" onclick="switchView('overview')">📊 Overview</button>
+                <button class="tab" onclick="switchView('individual')">👤 Vista Individual</button>
+                <button class="tab" onclick="switchView('analytics')">📈 Analytics Avanzados</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- LOAD SECTION -->
+        <div class="load-section" id="loadSection">
+            <h2 style="margin-bottom: 1rem;">Cargar Datos desde Google Sheets</h2>
+            <p style="margin-bottom: 1rem; opacity: 0.7;">Sheet ID: 1MVQj-Mr4wEWldcN6tehLgGqZUw41v_qLMLKxlclVlCk</p>
+            <button class="btn" onclick="loadData()" id="loadBtn">Cargar Datos</button>
+            <div id="loadingIndicator" class="loading" style="display: none;">Cargando datos...</div>
+            <div id="errorDisplay" class="error" style="display: none;"></div>
+        </div>
+        
+        <!-- VIEW 1: OVERVIEW -->
+        <div class="view active" id="view-overview">
+            <div class="header">
+                <h1>Dashboard General</h1>
+                <p class="subtitle">Vista consolidada de todos los perfiles</p>
+            </div>
+            
+            <div class="kpi-grid" id="overviewKPIs"></div>
+            <div id="overviewCharts"></div>
+        </div>
+        
+        <!-- VIEW 2: INDIVIDUAL -->
+        <div class="view" id="view-individual">
+            <div class="header">
+                <h1>Vista Individual</h1>
+                <p class="subtitle">Explora persona por persona</p>
+            </div>
+            
+            <input type="text" class="search-bar" id="searchBar" placeholder="🔍 Buscar por nombre, email, ciudad..." onkeyup="filterTable()">
+            
+            <div class="filter-pills" id="filterPills"></div>
+            
+            <div class="table-container">
+                <table id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Ciudad</th>
+                            <th>Perfil</th>
+                            <th>Score</th>
+                            <th>Confianza</th>
+                            <th>Califica</th>
+                            <th>Pricing</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody"></tbody>
+                </table>
+            </div>
+            
+            <div id="userDetails" style="margin-top: 2rem;"></div>
+        </div>
+        
+        <!-- VIEW 3: ANALYTICS -->
+        <div class="view" id="view-analytics">
+            <div class="header">
+                <h1>Analytics Avanzados</h1>
+                <p class="subtitle">KPIs creativos y distribuciones</p>
+            </div>
+            
+            <div class="kpi-grid" id="analyticsKPIs"></div>
+            <div id="analyticsCharts"></div>
+            <div class="insights-grid" id="advancedInsights"></div>
+        </div>
+    </div>
+    
+    <script>
+        const SHEET_ID = '1MVQj-Mr4wEWldcN6tehLgGqZUw41v_qLMLKxlclVlCk';
+        const SHEET_NAME = 'Hoja 1';
+        
+        let allData = [];
+        let currentFilter = 'all';
+        
+        async function loadData() {
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('errorDisplay').style.display = 'none';
+            document.getElementById('loadBtn').disabled = true;
+            
+            try {
+                const url = `https://docs.google.com/spreadsheets/d//${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+                const response = await fetch(url);
+                const text = await response.text();
+                const json = JSON.parse(text.substring(47).slice(0, -2));
+                const rows = json.table.rows;
+                
+                allData = rows.slice(1).map(row => ({
+                    timestamp: row.c[0]?.v || '',
+                    name: row.c[1]?.v || '',
+                    email: row.c[2]?.v || '',
+                    city: row.c[3]?.v || '',
+                    profile: row.c[4]?.v || '',
+                    qualifies: row.c[5]?.v || '',
+                    confidence_num: row.c[6]?.v || 5,
+                    p1_freq: row.c[8]?.v || '',
+                    p2_sports: row.c[9]?.v || '',
+                    p3_goal: row.c[10]?.v || '',
+                    p4_wearable: row.c[11]?.v || '',
+                    p5_metrics: row.c[12]?.v || '',
+                    p6_understanding: row.c[13]?.v || '',
+                    p7_fatigue: row.c[14]?.v || '',
+                    p8_pain: row.c[15]?.v || '',
+                    p9_frustration: row.c[16]?.v || '',
+                    p10_willingness: row.c[17]?.v || '',
+                    p11_pricing: row.c[18]?.v || '',
+                    p12_confidence: row.c[19]?.v || 5,
+                    p13_pro: row.c[20]?.v || '',
+                    level: row.c[21]?.v || '',
+                    score: parseInt(row.c[22]?.v) || 0,
+                    archetype: classifyArchetype(row)
+                }));
+                
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('loadSection').style.display = 'none';
+                
+                renderAllViews();
+                
+            } catch (error) {
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('errorDisplay').style.display = 'block';
+                document.getElementById('errorDisplay').innerHTML = `
+                    <strong>Error:</strong> ${error.message}<br><br>
+                    Asegúrate de que el Google Sheet sea público y la hoja se llame "Hoja 1"
+                `;
+                document.getElementById('loadBtn').disabled = false;
+            }
+        }
+        
+        function classifyArchetype(row) {
+            const p4 = row.c[11]?.v || '';
+            const p6 = row.c[13]?.v || '';
+            const p8 = row.c[15]?.v || '';
+            const p10 = row.c[17]?.v || '';
+            
+            const hasWearable = p4.includes('Apple') || p4.includes('Garmin') || p4.includes('Whoop');
+            const isExpert = p6.includes('perfectamente');
+            const isIntermediate = p6.includes('básico');
+            const isConfused = p6.includes('No entiendo');
+            const hasProtocol = p8.includes('protocolo propio');
+            const wouldUse = p10.includes('definitivamente') || p10.includes('Probablemente sí');
+            const notInterested = p4.includes('No me interesa') || p10.includes('no');
+            const interested = p4.includes('me interesa');
+            
+            if (notInterested) return 'anti';
+            if ((isExpert || hasProtocol) && hasWearable) return 'pro';
+            if (isIntermediate && hasWearable && wouldUse) return 'kako';
+            if (isConfused && hasWearable && wouldUse) return 'agus';
+            if ((interested || !hasWearable) && wouldUse) return 'maggie';
+            return 'anti';
+        }
+        
+        function switchView(viewName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`view-${viewName}`).classList.add('active');
+        }
+        
+        function renderAllViews() {
+            renderOverview();
+            renderIndividual();
+            renderAnalytics();
+        }
+        
+        // ============ OVERVIEW VIEW ============
+        function renderOverview() {
+            const total = allData.length;
+            const profiles = groupByArchetype();
+            const targetCount = profiles.kako.length + profiles.agus.length + profiles.pro.length;
+            
+            // KPIs
+            const kpis = [
+                { label: 'Total Respuestas', value: total, icon: '👥' },
+                { label: 'Target Válido', value: targetCount, icon: '🎯' },
+                { label: '% Conversión', value: `${Math.round(targetCount/total*100)}%`, icon: '📊' },
+                { label: 'Kako (Principal)', value: profiles.kako.length, icon: '⚡' },
+                { label: 'Agus (Secundario)', value: profiles.agus.length, icon: '🔍' },
+                { label: 'Pro (Premium)', value: profiles.pro.length, icon: '💎' }
+            ];
+            
+            document.getElementById('overviewKPIs').innerHTML = kpis.map(kpi => `
+                <div class="kpi-card">
+                    <div class="kpi-value">${kpi.icon} ${kpi.value}</div>
+                    <div class="kpi-label">${kpi.label}</div>
+                </div>
+            `).join('');
+            
+            // Charts
+            renderOverviewCharts(profiles);
+        }
+        
+        function renderOverviewCharts(profiles) {
+            const container = document.getElementById('overviewCharts');
+            
+            // Chart 1: Distribución de arquetipos
+            const archetypeData = [
+                { label: 'Kako - Guerrero Inteligente', count: profiles.kako.length, color: '#5a7a65' },
+                { label: 'Agus - Metricólogo Curioso', count: profiles.agus.length, color: '#9d8164' },
+                { label: 'Pro - Optimizador Elite', count: profiles.pro.length, color: '#2d5016' },
+                { label: 'Maggie - Sin Método', count: profiles.maggie.length, color: '#cc6666' },
+                { label: 'Anti-User', count: profiles.anti.length, color: '#666666' }
+            ];
+            
+            container.innerHTML = `
+                <div class="chart-container">
+                    <div class="chart-title">Distribución de Arquetipos</div>
+                    <div class="bar-chart">
+                        ${archetypeData.map(item => `
+                            <div class="bar-item">
+                                <div class="bar-label">${item.label}</div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" style="width: ${item.count/allData.length*100}%; background: ${item.color};">
+                                        <span class="bar-value">${item.count}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ============ INDIVIDUAL VIEW ============
+        function renderIndividual() {
+            // Filter pills
+            const archetypes = ['all', 'kako', 'agus', 'pro', 'maggie', 'anti'];
+            const labels = {
+                all: 'Todos',
+                kako: 'Kako',
+                agus: 'Agus',
+                pro: 'Pro',
+                maggie: 'Maggie',
+                anti: 'Anti'
+            };
+            
+            document.getElementById('filterPills').innerHTML = archetypes.map(arch => `
+                <button class="pill ${arch === 'all' ? 'active' : ''}" onclick="filterByArchetype('${arch}')">${labels[arch]}</button>
+            `).join('');
+            
+            // Table
+            renderTable();
+        }
+        
+        function renderTable(filtered = allData) {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = filtered.map((user, idx) => `
+                <tr onclick="showUserDetail(${allData.indexOf(user)})">
+                    <td>${user.name}</td>
+                    <td style="font-size: 0.85rem; opacity: 0.7;">${user.email}</td>
+                    <td>${user.city || '-'}</td>
+                    <td><span class="badge badge-${user.archetype}">${user.archetype.toUpperCase()}</span></td>
+                    <td>${user.score}</td>
+                    <td>${user.p12_confidence}/10</td>
+                    <td><span class="badge badge-${user.qualifies === 'SI' ? 'yes' : 'no'}">${user.qualifies}</span></td>
+                    <td style="font-size: 0.85rem;">${user.p11_pricing}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function filterByArchetype(archetype) {
+            currentFilter = archetype;
+            
+            document.querySelectorAll('.pill').forEach(pill => pill.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const filtered = archetype === 'all' 
+                ? allData 
+                : allData.filter(u => u.archetype === archetype);
+            
+            renderTable(filtered);
+        }
+        
+        function filterTable() {
+            const search = document.getElementById('searchBar').value.toLowerCase();
+            const filtered = allData.filter(u => 
+                (currentFilter === 'all' || u.archetype === currentFilter) &&
+                (u.name.toLowerCase().includes(search) || 
+                 u.email.toLowerCase().includes(search) ||
+                 (u.city && u.city.toLowerCase().includes(search)))
+            );
+            renderTable(filtered);
+        }
+        
+        function showUserDetail(index) {
+            const user = allData[index];
+            const container = document.getElementById('userDetails');
+            
+            container.innerHTML = `
+                <div class="user-detail">
+                    <div class="detail-header">
+                        <div>
+                            <div class="detail-name">${user.name}</div>
+                            <p style="opacity: 0.6; margin-top: 0.5rem;">${user.email} • ${user.city || 'Ciudad no especificada'}</p>
+                        </div>
+                        <div>
+                            <span class="badge badge-${user.archetype}" style="font-size: 1rem; padding: 0.5rem 1.5rem;">
+                                ${user.archetype.toUpperCase()}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Score Profesionalismo</div>
+                            <div class="detail-value"><strong>${user.score}/100</strong> (${user.level})</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Confianza en Decisiones</div>
+                            <div class="detail-value">${user.p12_confidence}/10</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Califica para Beta</div>
+                            <div class="detail-value"><span class="badge badge-${user.qualifies === 'SI' ? 'yes' : 'no'}">${user.qualifies}</span></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">P1: Frecuencia Entrenamiento</div>
+                            <div class="detail-value">${user.p1_freq}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">P2: Deportes</div>
+                            <div class="detail-value">${user.p2_sports}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">P3: Objetivo</div>
+                            <div class="detail-value">${user.p3_goal}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">P4: Wearable</div>
+                            <div class="detail-value">${user.p4_wearable}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">P5: Métricas que Revisa</div>
+                            <div class="detail-value">${user.p5_metrics || 'N/A'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">P6: Entendimiento de Datos</div>
+                            <div class="detail-value">${user.p6_understanding}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">P7: Comportamiento ante Fatiga</div>
+                            <div class="detail-value">${user.p7_fatigue}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">P8: Qué Hace con Molestias</div>
+                            <div class="detail-value">${user.p8_pain}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">P9: Mayor Frustración</div>
+                            <div class="detail-value">${user.p9_frustration}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">P10: Usaría la App</div>
+                            <div class="detail-value">${user.p10_willingness}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">P11: Disposición a Pagar</div>
+                            <div class="detail-value">${user.p11_pricing}</div>
+                        </div>
+                        ${user.p13_pro ? `
+                        <div class="detail-item">
+                            <div class="detail-label">P13: Motivación PRO</div>
+                            <div class="detail-value">${user.p13_pro}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // ============ ANALYTICS VIEW ============
+        function renderAnalytics() {
+            renderAnalyticsKPIs();
+            renderAnalyticsCharts();
+            renderAdvancedInsights();
+        }
+        
+        function renderAnalyticsKPIs() {
+            const avgScore = (allData.reduce((sum, u) => sum + u.score, 0) / allData.length).toFixed(1);
+            const avgConfidence = (allData.reduce((sum, u) => sum + parseFloat(u.p12_confidence), 0) / allData.length).toFixed(1);
+            
+            const highValue = allData.filter(u => u.p11_pricing && (u.p11_pricing.includes('$10') || u.p11_pricing.includes('$100'))).length;
+            const mediumValue = allData.filter(u => u.p11_pricing && u.p11_pricing.includes('$8')).length;
+            const lowValue = allData.filter(u => u.p11_pricing && u.p11_pricing.includes('$5')).length;
+            
+            const appleUsers = allData.filter(u => u.p4_wearable && u.p4_wearable.includes('Apple')).length;
+            const garminUsers = allData.filter(u => u.p4_wearable && u.p4_wearable.includes('Garmin')).length;
+            const whoopUsers = allData.filter(u => u.p4_wearable && u.p4_wearable.includes('Whoop')).length;
+            
+            const kpis = [
+                { label: 'Score Promedio', value: avgScore, sub: '/ 100' },
+                { label: 'Confianza Promedio', value: avgConfidence, sub: '/ 10' },
+                { label: 'Dispuestos a $10+', value: highValue, sub: `${Math.round(highValue/allData.length*100)}%` },
+                { label: 'Apple Watch', value: appleUsers, sub: `${Math.round(appleUsers/allData.length*100)}%` },
+                { label: 'Garmin', value: garminUsers, sub: `${Math.round(garminUsers/allData.length*100)}%` },
+                { label: 'Whoop/Oura/Polar', value: whoopUsers, sub: `${Math.round(whoopUsers/allData.length*100)}%` }
+            ];
+            
+            document.getElementById('analyticsKPIs').innerHTML = kpis.map(kpi => `
+                <div class="kpi-card">
+                    <div class="kpi-value">${kpi.value}</div>
+                    <div class="kpi-label">${kpi.label}</div>
+                    <div class="kpi-change">${kpi.sub}</div>
+                </div>
+            `).join('');
+        }
+        
+        function renderAnalyticsCharts() {
+            const container = document.getElementById('analyticsCharts');
+            
+            // Chart: Distribución de pricing
+            const pricingDist = countValues('p11_pricing');
+            const pricingChart = createBarChart('Distribución de Willingness to Pay', pricingDist);
+            
+            // Chart: Distribución de frustración
+            const frustrationDist = countValues('p9_frustration');
+            const frustrationChart = createBarChart('Pain Points Más Comunes', frustrationDist, '#cc6666');
+            
+            // Chart: Distribución de deportes
+            const sportsDist = countMultiValues('p2_sports');
+            const sportsChart = createBarChart('Deportes Más Practicados', sportsDist, '#9d8164');
+            
+            // Chart: Wearables
+            const wearableDist = countValues('p4_wearable');
+            const wearableChart = createBarChart('Distribución de Wearables', wearableDist, '#5a7a65');
+            
+            container.innerHTML = pricingChart + frustrationChart + sportsChart + wearableChart;
+        }
+        
+        function renderAdvancedInsights() {
+            const profiles = groupByArchetype();
+            const total = allData.length;
+            
+            const insights = [];
+            
+            // Insight 1: Score vs Pricing correlation
+            const highScoreHighPrice = allData.filter(u => 
+                u.score >= 60 && 
+                u.p11_pricing && 
+                (u.p11_pricing.includes('$10') || u.p11_pricing.includes('$100'))
+            ).length;
+            
+            insights.push({
+                title: '💰 Correlación Score vs Pricing',
+                text: `${highScoreHighPrice} usuarios (${Math.round(highScoreHighPrice/total*100)}%) tienen score alto (60+) Y pagarían $10+. ${highScoreHighPrice > total*0.3 ? 'Hay correlación positiva - a mayor profesionalismo, mayor willingness to pay.' : 'No hay correlación clara - el precio no depende del nivel.'}`
+            });
+            
+            // Insight 2: Confianza vs Necesidad
+            const lowConfHighWilling = allData.filter(u => 
+                parseFloat(u.p12_confidence) <= 5 && 
+                u.p10_willingness && 
+                (u.p10_willingness.includes('definitivamente') || u.p10_willingness.includes('Probablemente sí'))
+            ).length;
+            
+            insights.push({
+                title: '🎯 Sweet Spot: Baja Confianza + Alta Intención',
+                text: `${lowConfHighWilling} usuarios (${Math.round(lowConfHighWilling/total*100)}%) tienen baja confianza (≤5/10) pero definitivamente usarían la app. Este es tu sweet spot - saben que necesitan ayuda.`
+            });
+            
+            // Insight 3: Wearable ecosystem
+            const appleShare = allData.filter(u => u.p4_wearable && u.p4_wearable.includes('Apple')).length;
+            const garminShare = allData.filter(u => u.p4_wearable && u.p4_wearable.includes('Garmin')).length;
+            
+            insights.push({
+                title: '⌚ Ecosistema Wearable',
+                text: `Apple Watch domina con ${Math.round(appleShare/total*100)}% vs Garmin ${Math.round(garminShare/total*100)}%. ${appleShare > garminShare*2 ? 'Prioriza integración con Apple HealthKit.' : 'Necesitas soportar ambos ecosistemas.'}`
+            });
+            
+            // Insight 4: Geographic concentration
+            const cities = {};
+            allData.forEach(u => {
+                if (u.city) cities[u.city] = (cities[u.city] || 0) + 1;
+            });
+            const topCity = Object.keys(cities).reduce((a, b) => cities[a] > cities[b] ? a : b, '');
+            
+            if (topCity) {
+                insights.push({
+                    title: '🌎 Concentración Geográfica',
+                    text: `${topCity} tiene ${cities[topCity]} usuarios (${Math.round(cities[topCity]/total*100)}%). ${cities[topCity] > total*0.3 ? 'Alta concentración - considera beta local primero.' : 'Distribución geográfica amplia - lanzamiento global viable.'}`
+                });
+            }
+            
+            // Insight 5: Pro motivations
+            const proUsers = allData.filter(u => u.archetype === 'pro' && u.p13_pro);
+            if (proUsers.length > 0) {
+                const proMotivations = {};
+                proUsers.forEach(u => {
+                    proMotivations[u.p13_pro] = (proMotivations[u.p13_pro] || 0) + 1;
+                });
+                const topMotivation = Object.keys(proMotivations).reduce((a, b) => proMotivations[a] > proMotivations[b] ? a : b, '');
+                
+                insights.push({
+                    title: '💎 Qué Buscan los PROs',
+                    text: `Entre usuarios PRO, la motivación #1 es "${topMotivation}" (${proMotivations[topMotivation]} de ${proUsers.length}). ${topMotivation.includes('Descubrir') ? 'Enfoca value prop en insights únicos que solo IA puede ver.' : topMotivation.includes('Automatizar') ? 'Enfoca en ahorro de tiempo y automatización.' : 'Valoran la validación científica.'}`
+                });
+            }
+            
+            // Insight 6: Behavioral patterns
+            const googlersHighConf = allData.filter(u => 
+                (u.p7_fatigue && u.p7_fatigue.includes('Google')) && 
+                parseFloat(u.p12_confidence) >= 7
+            ).length;
+            
+            insights.push({
+                title: '🔍 Paradoja del Googler Confiado',
+                text: `${googlersHighConf} usuarios buscan en Google pero tienen alta confianza (7+/10). ${googlersHighConf > 3 ? 'Buscan validación, no educación básica. Enfoca en "segunda opinión científica".' : 'La mayoría que googlea tiene baja confianza (educación básica).'}`
+            });
+            
+            document.getElementById('advancedInsights').innerHTML = insights.map(ins => `
+                <div class="insight-card">
+                    <div class="insight-title">${ins.title}</div>
+                    <div class="insight-text">${ins.text}</div>
+                </div>
+            `).join('');
+        }
+        
+        // ============ HELPER FUNCTIONS ============
+        function groupByArchetype() {
+            const groups = { kako: [], agus: [], pro: [], maggie: [], anti: [] };
+            allData.forEach(u => groups[u.archetype].push(u));
+            return groups;
+        }
+        
+        function countValues(field) {
+            const counts = {};
+            allData.forEach(u => {
+                const val = u[field];
+                if (val) counts[val] = (counts[val] || 0) + 1;
+            });
+            return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+        }
+        
+        function countMultiValues(field) {
+            const counts = {};
+            allData.forEach(u => {
+                const val = u[field];
+                if (val) {
+                    val.split(',').forEach(item => {
+                        const trimmed = item.trim();
+                        if (trimmed) counts[trimmed] = (counts[trimmed] || 0) + 1;
+                    });
+                }
+            });
+            return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+        }
+        
+        function createBarChart(title, data, color = '#5a7a65') {
+            const max = Math.max(...data.map(d => d[1]));
+            return `
+                <div class="chart-container">
+                    <div class="chart-title">${title}</div>
+                    <div class="bar-chart">
+                        ${data.slice(0, 8).map(([label, count]) => `
+                            <div class="bar-item">
+                                <div class="bar-label">${label}</div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" style="width: ${count/max*100}%; background: ${color};">
+                                        <span class="bar-value">${count}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
