@@ -842,6 +842,24 @@
                     min: "Siempre dudo, busco en Google, pregunto",
                     max: "Totalmente confiado, sé exactamente qué hacer"
                 }
+            },
+            {
+                id: 13,
+                text: "Si ya tienes experiencia con wearables y protocolos propios, ¿qué te motivaría a usar Sport Agent?",
+                subtitle: "(Buscamos entender qué valor agregado necesitas)",
+                type: "single",
+                condition: function(answers) {
+                    var p6 = answers.find(function(a) { return a.questionId === 6; });
+                    var p8 = answers.find(function(a) { return a.questionId === 8; });
+                    return (p6 && p6.value === 'expert') || (p8 && p8.value === 'have_protocol');
+                },
+                options: [
+                    { text: "Descubrir patterns e insights que solo no veo", value: "insights", score: 10 },
+                    { text: "Validar científicamente mis decisiones actuales", value: "validate", score: 9 },
+                    { text: "Automatizar lo que hago manualmente", value: "automate", score: 8 },
+                    { text: "Comparar con datos de otros atletas elite", value: "compare", score: 7 },
+                    { text: "Nada, estoy satisfecho con mi sistema actual", value: "satisfied", score: 0 }
+                ]
             }
         ];
 
